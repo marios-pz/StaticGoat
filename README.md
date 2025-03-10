@@ -1,0 +1,2 @@
+# StaticGoat
+Static-Site generator
