@@ -1,0 +1,28 @@
+# -- Override the name of the chart
+nameOverride: ""
+# -- Override the full name of the chart
+fullnameOverride: ""
+# -- Override the namespace of the chart
+namespaceOverride: ""
+
+###
+# -- Type of the CNPG database. Available types:
+# * `postgresql`
+# * `postgis`
+# * `timescaledb`
+type: timescaledb
+
+version:
+  # -- PostgreSQL major version to use
+  postgresql: "16"
+  # -- If using TimescaleDB, specify the version
+  timescaledb: "2.15"
+  # -- If using PostGIS, specify the version
+  postgis: "3.4"
+
+mode: standalone
+
+cluster:
+  # -- Number of instances
+  instances: 2
+  # imageName: "timescaledb-ha:pg16.0-ts2.15.0"
