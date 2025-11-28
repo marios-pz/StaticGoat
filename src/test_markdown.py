@@ -1,10 +1,9 @@
 import unittest
 
-from markdown import markdown_to_blocks
+from blocktype import markdown_to_blocks
 
 
 class TestMarkdown(unittest.TestCase):
-
     def test_markdown_to_blocks(self):
         md = """
 This is **bolded** paragraph

@@ -51,30 +51,30 @@ class ParentNode(HTMLNode):
         super().__init__(tag=tag, children=children, props=props)
 
     def to_html(self):
-        if not self.tag:
-            raise ValueError("Tag is mandatory.")
+        if self.tag is None:
+            raise ValueError("ParentNode must have a tag")
 
-        if not self.children:
-            raise ValueError("Children are mandatory.")
+        if self.children is None:
+            raise ValueError("ParentNode must have children")
 
-        output = ""
+        props_str = self.props_to_html()
+
+        open_tag = f"<{self.tag}{props_str}>"
+        close_tag = f"</{self.tag}>"
+
+        html_str = f"{open_tag}"
+
         for child in self.children:
-            if isinstance(child, LeafNode) and child.value is None:
-                raise ValueError(
-                    f"Child node {child} is missing value, and it's mandatory."
-                )
+            html_str += child.to_html()
 
-            output += child.to_html()
-
-        props_str = f" {self.props_to_html()}" if self.props else ""
-
-        return f"<{self.tag}{props_str}>{output}</{self.tag}>"
+        html_str += close_tag
+        return html_str
 
 
 def text_node_to_html_node(text_node: TextNode):
     match text_node.text_type:
         case TextType.TEXT:
-            return LeafNode(value=text_node.text)
+            return LeafNode(tag=None, value=text_node.text)
         case TextType.BOLD:
             return LeafNode(tag="b", value=text_node.text)
         case TextType.ITALIC:
@@ -82,10 +82,16 @@ def text_node_to_html_node(text_node: TextNode):
         case TextType.CODE:
             return LeafNode(tag="code", value=text_node.text)
         case TextType.LINK:
+            if text_node.url is None:
+                text_node.url = ""
             return LeafNode(
                 tag="a", value=text_node.text, props={"href": text_node.url}
             )
         case TextType.IMAGE:
+            if text_node.url is None:
+                text_node.url = ""
             return LeafNode(
                 tag="img", value="", props={"src": text_node.url, "alt": text_node.text}
             )
+        case _:
+            raise Exception(f"Unknown TextNode type {text_node.text_type}")

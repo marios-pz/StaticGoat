@@ -1,39 +1,48 @@
 import os
+import sys
 import shutil
 import logging
-
+from page import generate_pages_recursive
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 
 
-def main():
-    copy_thing()
+def copy_directory_recursive(src: Path, dst: Path) -> None:
+    if not dst.exists():
+        dst.mkdir()
 
-
-def copy_thing():
-    source = "static"
-    destination = "public"
-
-    # It should first delete all the contents of the destination directory (public) to ensure that the copy is clean
-    if os.path.exists(destination):
-        logging.info(f"Removing existing directory: {destination}")
-        shutil.rmtree(destination)
-
-    # It should copy all files and subdirectories, nested files, etc.
-    os.makedirs(destination, exist_ok=True)
-
-    for name in os.listdir(source):
-        src_path = os.path.join(source, name)
-        dst_path = os.path.join(destination, name)
-
-        if os.path.isdir(src_path):
-            logging.info(f"Copying directory: {src_path} -> {dst_path}")
-            shutil.copytree(src_path, dst_path)
-        elif os.path.isfile(src_path):
-            logging.info(f"Copying file: {src_path} -> {dst_path}")
-            shutil.copy2(src_path, dst_path)
+    for f in src.iterdir():
+        new_f = dst / f.name
+        if f.is_dir():
+            copy_directory_recursive(f, new_f)
         else:
-            logging.info(f"Skipping non-regular item: {src_path}")
+            print(f"Copying {f} to {new_f}")
+            shutil.copy(f, new_f)
+
+
+def main():
+    if len(sys.argv) == 2:
+        basepath = sys.argv[1]
+    else:
+        basepath = "/"
+
+    print(basepath)
+    project_root = Path(__file__).parent.parent
+
+    dest_path = project_root / "public"
+    static_dir = project_root / "static"
+
+    # remove before copying
+    if dest_path.exists():
+        shutil.rmtree(dest_path)
+
+    copy_directory_recursive(static_dir, dest_path)
+
+    from_path = project_root / "content"
+    template_path = project_root / "template.html"
+
+    generate_pages_recursive(from_path, template_path, dest_path, basepath)
 
 
 if __name__ == "__main__":

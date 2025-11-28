@@ -1,17 +1,23 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class TextType(Enum):
-    TEXT = "text"
-    BOLD = "bold"
-    ITALIC = "italic"
-    CODE = "code"
-    LINK = "link"
-    IMAGE = "image"
+    TEXT = auto()
+    BOLD = auto()
+    ITALIC = auto()
+    CODE = auto()
+    LINK = auto()
+    IMAGE = auto()
+
+
+class TextNodeDelimiter(Enum):
+    BOLD = "**"
+    ITALIC = "_"
+    CODE = "`"
 
 
 class TextNode:
-    def __init__(self, text: str, text_type: TextType, url: str = None):
+    def __init__(self, text: str, text_type: TextType, url: str | None = None):
         if not isinstance(text_type, TextType):
             raise ValueError("text_type must be an instance of TextType Enum")
 
