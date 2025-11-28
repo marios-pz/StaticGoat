@@ -30,7 +30,7 @@ def main():
     print(basepath)
     project_root = Path(__file__).parent.parent
 
-    dest_path = project_root / "public"
+    dest_path = project_root / "docs"
     static_dir = project_root / "static"
 
     # remove before copying
